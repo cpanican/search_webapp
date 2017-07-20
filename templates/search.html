@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/search.css') }}" />
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+{% endblock %}
+
+
+
+{% block appcontent %}
+<!-- Text inputs -->
+	<div class="container-fluid">
+		<div class="row">
+            <div class="col-md-3">
+                <h2>Search Tool</h2>
+		        <p>This tool searches for drug name, its ingredient and side effect.</p>
+                <br>
+                <form action="" method="post">
+                    <h4>Drug Name</h4>
+                    <input name="ndc" type="text" class="form-control" placeholder="Enter a drug name / NDC">
+                    <h4>Ingredient</h4>
+                    <input name="atc" type="text" class="form-control" placeholder="Enter ingredient / ATC">
+                    <h4>Side effect</h4>
+                    <input name="umls" type="text" class="form-control" placeholder="Enter a side effect / UMLS">
+                    <br>
+                    <input class="btn btn-default" type="submit" value="Search">
+                </form>
+            </div>
+
+
+
+            <div class="col-md-9">
+                <h3 class="text-center">Results</h3>
+                <div class="col-md-4 pre-scrollable">
+                    {% for ndc in ndc_codes %}
+                    <div class="panel panel-default panel-body">
+                        <h4>{{ ndc[0] }}</h4>
+                        <p>NDC: {{ ndc[1] }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 pre-scrollable">
+                    {% for atc in atc_codes %}
+                    <div class="panel panel-default panel-body">
+                        <h4>{{ atc[0] }}</h4>
+                        <p>ATC: {{ atc[1] }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 pre-scrollable">
+                    {% for umls in umls_codes %}
+                    <div class="panel panel-default panel-body">
+                        <h4>{{ umls[0] }}</h4>
+                        <p>UMLS: {{ umls[1] }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+		<hr>
+	</div>
+{% endblock %}

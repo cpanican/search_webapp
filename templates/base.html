@@ -1,0 +1,61 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/base.css') }}" />
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+{% endblock %}
+
+{%block navbar %}
+<header>
+    <div class="nav-brand">
+        <div class="nav-brand-name"><a href="#">pulseData</a></div>
+        <div class="nav-brand-slogan"><a href="#">partnering to reduce preventable sickness</a></div>
+    </div>
+    <div class="nav-links">
+        <a href="#">info</a>
+        <a href="#">logout</a>
+    </div>
+</header>
+<div class="main-nav">
+    <div class="main-nav-collection">
+        <a href="#" class="btn">
+            <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+            List
+        </a>
+        <!--<a href="/actions" class="btn">-->
+            <!--<span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>-->
+            <!--Actions-->
+        <!--</a>-->
+        <a href="#" class="btn">
+            <span class="glyphicon glyphicon-list-alt"></span>
+            Care Plans
+        </a>
+        <a href="#" class="btn">
+            <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+            Metrics
+        </a>
+    </div>
+    <div class="main-nav-collection">
+        <a href="#" class="btn">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            My Account
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="app-content">
+        {% block appcontent %}{% endblock %}
+    </div>
+{% endblock %}
+

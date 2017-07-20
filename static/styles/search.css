@@ -1,0 +1,11 @@
+.pre-scrollable {
+    max-height: 75vh;
+}
+
+.input-group {
+    width: 100%;
+}
+
+.panel {
+    margin-bottom: 8px;
+}

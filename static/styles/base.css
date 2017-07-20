@@ -1,0 +1,122 @@
+html, body {
+    height: 100%;
+    background: #fbfbfb;
+}
+
+@charset "UTF-8";
+
+@font-face {
+    font-family: 'hanken-book';
+    src: url('/static/fonts/hanken-book-webfont.woff2') format('woff2'),
+    url('/static/fonts/hanken-book-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#chico-logo{
+    width: 432px;
+    height: 77px;
+}
+
+body{
+    font-family: arial;
+}
+
+#tagline{
+    font-size: 25px;
+    vertical-align: top;
+    position: relative;
+    top: 27px;
+}
+
+.condition-button{
+    border-radius: 5px;
+    background: blue;
+    color: white;
+    margin: 10px;
+    padding: 5px;
+}
+
+.condition-button a:visited, .condition-button a{
+    color: white;
+    text-decoration: none;
+}
+
+#patient-table{
+    margin-top: 20px;
+}
+
+#patient-table td{
+    padding: 5px;
+}
+
+#notes-on-patient{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.app-content {
+    padding: 16px 16px 0;
+
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: white;
+}
+
+header .nav-links a:not(:last-child):after {
+    content: " | ";
+}
+
+.nav-brand-name a {
+    font-size: 36px;
+    color: #11479d;
+    font-family: "hanken-book", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+
+.nav-brand-slogan a {
+    font-size: 18px;
+    color: #333;
+    font-family: "hanken-book", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+
+.nav-brand a {
+    text-decoration: none;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 16px;
+    background: #11479d;
+}
+
+.main-nav-collection {
+    display: flex;
+}
+
+.main-nav a, .main-nav a.btn:hover {
+    color: white;
+}
+
+.main-nav a.btn:hover {
+    opacity: .75;
+}
+
+.main-nav .main-nav-collection:first-of-type a:first-of-type {
+    margin-left: -10px;
+}
+
+.btn.btn-primary {
+    color: #fff;
+    background-color: #11479d;
+    border-color: #0c3982;
+}
+
+.right-button-container {
+    display: flex;
+    justify-content: flex-end;
+}
