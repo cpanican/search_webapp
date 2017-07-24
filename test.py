@@ -36,14 +36,24 @@ print(atc_code)
 umls_code = []
 for i in atc_code:
     cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}'".format(i))
-    umls = []
     data = cur.fetchall()
     for row in data:
-        umls.append(row[0])
-    umls_code = list(set(umls))
+        umls_code.append(row[0])
+    umls_code = list(set(umls_code))
 
+################################################## Webapp optimization ################################################
+umls_code = []
+placeholders = ', '.join(['%s']*len(atc_code))
+query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE atc_umls.ATC_CODE IN ({})'.format(placeholders)
+cur.execute(query, tuple(atc_code))
+data = cur.fetchall()
+for row in data:
+    umls_code.append(row[0])
+umls_code = list(set(umls_code))
+
+print(cur.execute(query, tuple(atc_code)))
+print(len(umls_code))
 print(umls_code)
-print(umls)
 
 #NDC LABEL
 ndc_label = []
@@ -179,3 +189,25 @@ if test:
 #         umls_label.append(row[0])
 # for i in zip_longest(umls_label, umls_code):
 #     umls_res.append(i)
+
+# I have NDC = 54868034000 and ATC = R06AA10
+qery = cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '54868034000' AND ATC_CODE = 'R06AA10'")
+print(qery)
+umls_code = []
+atc_code = ['R06AA10']
+ndc_in = '54868034000'
+atc_in = 'R06AA10'
+if (cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))):
+    cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ('{}')".format(atc_in))
+    data = cur.fetchall()
+    data2= list(cur)
+    print(data2)
+    for row in data:
+        umls_code.append(row[0])
+
+type(umls_code)
+umls_code = list(set(umls_code))
+print(umls_code)
+print(umls_code[1])
+print(len(umls_code))
+print("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))

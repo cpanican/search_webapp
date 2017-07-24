@@ -28,6 +28,7 @@ def search():
 @webapp.route('/', methods=['POST'])
 def search_page():
     if request.method == 'POST':
+        # Initialize variables and inputs
         # Input form requests
         ndc_in = request.form['ndc']
         atc_in = request.form['atc']
@@ -50,12 +51,21 @@ def search_page():
 
         if ndc_in:
             ndc_code.append(ndc_in)
+            print("ndc_in: " + ndc_in)
         if atc_in:
             atc_code.append(atc_in)
+            print("atc_in: " + atc_in)
         if umls_in:
             umls_code.append(umls_in)
+            print("umls_in: " + umls_in)
 
-        if ndc_in:
+
+
+
+        # Process the inputs and place them into variables
+        # Input is ndc only
+        if ndc_in and not atc_in and not umls_in:
+            print("ndc only")
             for i in ndc_code:
                 # cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE LIKE '{}'".format(i))
                 cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE LIKE '{}' LIMIT 10".format(i))
@@ -70,7 +80,9 @@ def search_page():
                 for row in data:
                     umls_code.append(row[0])
 
-        if atc_in:
+        # Input is atc only
+        if atc_in and not ndc_in and not umls_in:
+            print("atc only")
             for i in atc_code:
                 # cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}'".format(i))
                 cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
@@ -84,7 +96,9 @@ def search_page():
                 for row in data:
                     umls_code.append(row[0])
 
-        if umls_in:
+        # Input is umls only
+        if umls_in and not ndc_in and not atc_in:
+            print("umls only")
             for i in umls_code:
                 # cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA LIKE '{}'".format(i))
                 cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA LIKE '{}' LIMIT 10".format(i))
@@ -99,11 +113,40 @@ def search_page():
                 for row in data:
                     ndc_code.append(row[0])
 
+        # Input is ndc and atc
+        # If input is ndc and atc, then atc will be used to find umls. First, make sure that ndc match atc.
+        if ndc_in and atc_in and not umls_in:
+            print("ndc and atc")
+            if (cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))):
+                cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ('{}')".format(atc_in))
+                data = cur.fetchall()
+                for row in data:
+                    umls_code.append(row[0])
+
+
+        # Input is ndc and umls
+        # ???? Since atc is needed to match/connect ndc and umls, what results should be shown ???
+        if ndc_in and not atc_in and umls_in:
+            print("ndc and umls")
+            cur.execute("SELECT ndc_atc.ATC_CODE FROM ndc_atc INNER JOIN atc_umls ON ndc_atc.ATC_CODE = atc_umls.ATC_CODE WHERE NDC_CODE = '{}' AND UMLSCUI_MEDDRA = '{}'".format(ndc_in, umls_in))
+            data = cur.fetchall()
+            for row in data:
+                atc_code.append(row[0])
+
+        # Input is atc and umls
+        if not ndc_in and atc_in and umls_in:
+            print("atc and umls")
+            if (cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA = '{}' AND ATC_CODE = '{}'".format(umls_in, atc_in))):
+                cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ('{}') LIMIT 10".format(atc_in))
+                data = cur.fetchall()
+                for row in data:
+                    ndc_code.append(row[0])
 
 
 
 
-        # works
+
+        # Match codes with names
         # Remove Duplicates
         atc_code = list(set(atc_code))
         ndc_code = list(set(ndc_code))
