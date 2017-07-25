@@ -66,52 +66,94 @@ def search_page():
         # Input is ndc only
         if ndc_in and not atc_in and not umls_in:
             print("ndc only")
-            for i in ndc_code:
-                # cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE LIKE '{}'".format(i))
-                cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE LIKE '{}' LIMIT 10".format(i))
-                data = cur.fetchall()
-                for row in data:
-                    atc_code.append(row[0])
+            placeholder = ', '.join(['%s'] * len(ndc_code))
+            query = 'SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE IN ({}) LIMIT 10'.format(placeholder)
+            cur.execute(query, tuple(ndc_code))
+            data = cur.fetchall()
+            for row in data:
+                atc_code.append(row[0])
 
-            for i in atc_code:
-                # cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}'".format(i))
-                cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
-                data = cur.fetchall()
-                for row in data:
-                    umls_code.append(row[0])
+            placeholder = ', '.join(['%s'] * len(atc_code))
+            query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({}) LIMIT 10'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
+            data = cur.fetchall()
+            for row in data:
+                umls_code.append(row[0])
+
+            # for i in ndc_code:
+            #     # cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE LIKE '{}'".format(i))
+            #     cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE LIKE '{}' LIMIT 10".format(i))
+            #     data = cur.fetchall()
+            #     for row in data:
+            #         atc_code.append(row[0])
+            #
+            # for i in atc_code:
+            #     # cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}'".format(i))
+            #     cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
+            #     data = cur.fetchall()
+            #     for row in data:
+            #         umls_code.append(row[0])
 
         # Input is atc only
         if atc_in and not ndc_in and not umls_in:
             print("atc only")
-            for i in atc_code:
-                # cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}'".format(i))
-                cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
-                data = cur.fetchall()
-                for row in data:
-                    ndc_code.append(row[0])
+            placeholder = ', '.join(['%s']*len(atc_code))
+            query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({}) LIMIT 10'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
+            data = cur.fetchall()
+            for row in data:
+                ndc_code.append(row[0])
 
-                # cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}'".format(i))
-                cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
-                data = cur.fetchall()
-                for row in data:
-                    umls_code.append(row[0])
+            query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({}) LIMIT 10'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
+            data = cur.fetchall()
+            for row in data:
+                umls_code.append(row[0])
+
+            # for i in atc_code:
+            #     # cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}'".format(i))
+            #     cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
+            #     data = cur.fetchall()
+            #     for row in data:
+            #         ndc_code.append(row[0])
+            #
+            #     # cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}'".format(i))
+            #     cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
+            #     data = cur.fetchall()
+            #     for row in data:
+            #         umls_code.append(row[0])
 
         # Input is umls only
         if umls_in and not ndc_in and not atc_in:
             print("umls only")
-            for i in umls_code:
-                # cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA LIKE '{}'".format(i))
-                cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA LIKE '{}' LIMIT 10".format(i))
-                data = cur.fetchall()
-                for row in data:
-                    atc_code.append(row[0])
+            placeholder = ', '.join(['%s'] * len(umls_code))
+            query = 'SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) LIMIT 10'.format(placeholder)
+            cur.execute(query, tuple(umls_code))
+            data = cur.fetchall()
+            for row in data:
+                atc_code.append(row[0])
 
-            for i in atc_code:
-                # cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}'".format(i))
-                cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
-                data = cur.fetchall()
-                for row in data:
-                    ndc_code.append(row[0])
+            placeholder = ', '.join(['%s'] * len(atc_code))
+            query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({}) LIMIT 10'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
+            data = cur.fetchall()
+            for row in data:
+                ndc_code.append(row[0])
+
+
+            # for i in umls_code:
+            #     # cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA LIKE '{}'".format(i))
+            #     cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA LIKE '{}' LIMIT 10".format(i))
+            #     data = cur.fetchall()
+            #     for row in data:
+            #         atc_code.append(row[0])
+            #
+            # for i in atc_code:
+            #     # cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}'".format(i))
+            #     cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE LIKE '{}' LIMIT 10".format(i))
+            #     data = cur.fetchall()
+            #     for row in data:
+            #         ndc_code.append(row[0])
 
         # Input is ndc and atc
         # If input is ndc and atc, then atc will be used to find umls. First, make sure that ndc match atc.
