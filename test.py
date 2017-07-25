@@ -200,8 +200,6 @@ atc_in = 'R06AA10'
 if (cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))):
     cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ('{}')".format(atc_in))
     data = cur.fetchall()
-    data2= list(cur)
-    print(data2)
     for row in data:
         umls_code.append(row[0])
 
