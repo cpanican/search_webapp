@@ -200,6 +200,7 @@ atc_in = 'R06AA10'
 if (cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))):
     cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ('{}')".format(atc_in))
     data = cur.fetchall()
+    print(data)
     for row in data:
         umls_code.append(row[0])
 
@@ -209,3 +210,12 @@ print(umls_code)
 print(umls_code[1])
 print(len(umls_code))
 print("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))
+print(', '.join(repr(i) for i in umls_code))
+
+umls_in = 'test'
+umls_code = [umls_in]
+query = "SELECT UMLSCUI_MEDDRA FROM umls_label WHERE SIDE_EFFECT_NAME LIKE '(?)'", (umls_code,)
+print(cur.execute(query))
+print(umls_code)
+print(type(query))
+print(query)
