@@ -82,107 +82,127 @@ def get_results(ndc_in, atc_in, umls_in):
     print("NDC {}, ATC {}, UMLS {}".format(ndc_code, atc_code, umls_code))
     print()
 
-    # if ndc_in:
-    #     ndc_code.append(ndc_in)
-    #     print("ndc_in: " + ndc_in)
-    # if atc_in:
-    #     atc_code.append(atc_in)
-    #     print("atc_in: " + atc_in)
-    # if umls_in:
-    #     umls_code.append(umls_in)
-    #     print("umls_in: " + umls_in)
 
-    # Input is NDC only
     print(bool(ndc_code))
     print(bool(atc_code))
     print(bool(umls_code))
 
+    # Input is NDC only
     if ndc_code and not atc_code and not umls_code:
+        # if there are also inputs for ats or umls, put it on array to show correct results
         print("ndc only")
-        placeholder = ', '.join(['%s'] * len(ndc_code))
-        query = 'SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE IN ({})'.format(placeholder)
-        cur.execute(query, tuple(ndc_code))
-        data = cur.fetchall()
-        for row in data:
-            atc_code.append(row[0])
+        if atc_in and not atc_in.isspace():
+            atc_code = [atc_in]
+        else:
+            placeholder = ', '.join(['%s'] * len(ndc_code))
+            query = 'SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE IN ({})'.format(placeholder)
+            cur.execute(query, tuple(ndc_code))
+            data = cur.fetchall()
+            for row in data:
+                atc_code.append(row[0])
 
-        placeholder = ', '.join(['%s'] * len(atc_code))
-        query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({})'.format(placeholder)
-        cur.execute(query, tuple(atc_code))
-        data = cur.fetchall()
-        for row in data:
-            umls_code.append(row[0])
-
-    # Input is ATC only
-    if atc_code and not ndc_code and not umls_code:
-        print("atc only")
-        placeholder = ', '.join(['%s'] * len(atc_code))
-        query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({})'.format(placeholder)
-        cur.execute(query, tuple(atc_code))
-        data = cur.fetchall()
-        for row in data:
-            ndc_code.append(row[0])
-
-        query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({})'.format(placeholder)
-        cur.execute(query, tuple(atc_code))
-        data = cur.fetchall()
-        for row in data:
-            umls_code.append(row[0])
-
-    # Input is UMLS only
-    if umls_code and not ndc_code and not atc_code:
-        print("umls only")
-        placeholder = ', '.join(['%s'] * len(umls_code))
-        query = 'SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) LIMIT 1000'.format(placeholder)
-        cur.execute(query, tuple(umls_code))
-        data = cur.fetchall()
-        for row in data:
-            atc_code.append(row[0])
-
-        placeholder = ', '.join(['%s'] * len(atc_code))
-        query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({}) LIMIT 1000'.format(placeholder)
-        cur.execute(query, tuple(atc_code))
-        data = cur.fetchall()
-        for row in data:
-            ndc_code.append(row[0])
-
-    # Input is NDC and ATC
-    if ndc_code and atc_code and not umls_code:
-        print("ndc and atc")
-        # remove [ ] on the list
-        ndc = ', '.join(repr(i) for i in ndc_code)
-        atc = ', '.join(repr(i) for i in atc_code)
-        if cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE IN ({}) AND ATC_CODE IN ({})".format(ndc, atc)):
-            cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({})".format(atc))
+        if umls_in and not umls_in.isspace():
+            umls_code = [umls_in]
+        else:
+            placeholder = ', '.join(['%s'] * len(atc_code))
+            query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({})'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
             data = cur.fetchall()
             for row in data:
                 umls_code.append(row[0])
 
-    # Input is NDC and UMLS
-    if ndc_code and not atc_code and umls_code:
-        print("ndc and umls")
-        ndc = ', '.join(repr(i) for i in ndc_code)
-        umls = ', '.join(repr(i) for i in umls_code)
-        cur.execute("SELECT ndc_atc.ATC_CODE FROM ndc_atc INNER JOIN atc_umls ON ndc_atc.ATC_CODE = atc_umls.ATC_CODE WHERE NDC_CODE IN ({}) AND UMLSCUI_MEDDRA IN ({})".format(ndc, umls))
-        data = cur.fetchall()
-        for row in data:
-            atc_code.append(row[0])
-
-    # Input is ATC and UMLS
-    if not ndc_code and atc_code and umls_code:
-        print("atc and umls")
-        atc = ', '.join(repr(i) for i in atc_code)
-        umls = ', '.join(repr(i) for i in umls_code)
-        if (cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) AND ATC_CODE IN ({})".format(umls, atc))):
-            cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({})".format(atc))
+    # Input is ATC only
+    elif atc_code and not ndc_code and not umls_code:
+        print("atc only")
+        if ndc_in and not ndc_in.isspace():
+            ndc_code = [ndc_in]
+        else:
+            placeholder = ', '.join(['%s'] * len(atc_code))
+            query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({})'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
             data = cur.fetchall()
             for row in data:
                 ndc_code.append(row[0])
+
+        if umls_in and not umls_in.isspace():
+            umls_code = [umls_in]
+        else:
+            query = 'SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({})'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
+            data = cur.fetchall()
+            for row in data:
+                umls_code.append(row[0])
+
+    # Input is UMLS only
+    elif umls_code and not ndc_code and not atc_code:
+        print("umls only")
+        if atc_in and not atc_in.isspace():
+            atc_code = [atc_in]
+        else:
+            placeholder = ', '.join(['%s'] * len(umls_code))
+            query = 'SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) LIMIT 1000'.format(placeholder)
+            cur.execute(query, tuple(umls_code))
+            data = cur.fetchall()
+            for row in data:
+                atc_code.append(row[0])
+
+        if ndc_in and not ndc_in.isspace():
+            ndc_code = [ndc_in]
+        else:
+            placeholder = ', '.join(['%s'] * len(atc_code))
+            query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({}) LIMIT 1000'.format(placeholder)
+            cur.execute(query, tuple(atc_code))
+            data = cur.fetchall()
+            for row in data:
+                ndc_code.append(row[0])
+
+    # Input is NDC and ATC
+    elif ndc_code and atc_code and not umls_code:
+        print("ndc and atc")
+        # remove [ ] on the list
+        if umls_in and not umls_in.isspace():
+            umls_code = [umls_in]
+        else:
+            ndc = ', '.join(repr(i) for i in ndc_code)
+            atc = ', '.join(repr(i) for i in atc_code)
+            if cur.execute("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE IN ({}) AND ATC_CODE IN ({})".format(ndc, atc)):
+                cur.execute("SELECT UMLSCUI_MEDDRA FROM atc_umls WHERE ATC_CODE IN ({})".format(atc))
+                data = cur.fetchall()
+                for row in data:
+                    umls_code.append(row[0])
+
+    # Input is NDC and UMLS
+    elif ndc_code and not atc_code and umls_code:
+        print("ndc and umls")
+        if atc_in and not atc_in.isspace():
+            atc_code = [atc_in]
+        else:
+            ndc = ', '.join(repr(i) for i in ndc_code)
+            umls = ', '.join(repr(i) for i in umls_code)
+            cur.execute("SELECT ndc_atc.ATC_CODE FROM ndc_atc INNER JOIN atc_umls ON ndc_atc.ATC_CODE = atc_umls.ATC_CODE WHERE NDC_CODE IN ({}) AND UMLSCUI_MEDDRA IN ({})".format(ndc, umls))
+            data = cur.fetchall()
+            for row in data:
+                atc_code.append(row[0])
+
+    # Input is ATC and UMLS
+    elif not ndc_code and atc_code and umls_code:
+        print("atc and umls")
+        if ndc_in and not ndc_in.isspace():
+            ndc_code = [ndc_in]
+        else:
+            atc = ', '.join(repr(i) for i in atc_code)
+            umls = ', '.join(repr(i) for i in umls_code)
+            if (cur.execute("SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) AND ATC_CODE IN ({})".format(umls, atc))):
+                cur.execute("SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({})".format(atc))
+                data = cur.fetchall()
+                for row in data:
+                    ndc_code.append(row[0])
 
     # Remove Duplicates
     atc_code = list(set(atc_code))
     ndc_code = list(set(ndc_code))
     umls_code = list(set(umls_code))
+    print("ndc {} atc {} umls {}".format(ndc_code, atc_code, umls_code))
 
     # NDC LABEL
     if ndc_code:
