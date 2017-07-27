@@ -4,6 +4,7 @@ import os
 import random
 import re
 import json
+import time
 from datetime import datetime as dt
 from itertools import zip_longest
 import numpy as np
@@ -17,16 +18,13 @@ Bootstrap(webapp)
 
 conn = pymysql.connect(host='localhost', port=3306, user='root', password='password', db='webapp')
 cur = conn.cursor()
-cur2 = conn.cursor()
 
 
 def text_to_code(ndc_in, atc_in, umls_in):
-    print("text to code function")
+    print("Text to code function: ")
     ndc_code = []
     atc_code = []
     umls_code = []
-    print("inputs: " + ndc_in + ", " + atc_in + ", " + umls_in)
-    print("code inputs")
 
     print(not ndc_in.isspace())
     print(bool(ndc_in))
@@ -34,48 +32,45 @@ def text_to_code(ndc_in, atc_in, umls_in):
     # isspace() returns true if str is a space
     if not ndc_in.isspace() and ndc_in:
         ndc_code = [ndc_in]
-        query = "SELECT NDC_CODE FROM ndc_label WHERE STR_NDC LIKE '%{}%'".format(ndc_code[0])
-        print(cur.execute(query))
+        query = "SELECT NDC_CODE FROM ndc_label WHERE STR_NDC LIKE '%{}%' OR NDC_CODE LIKE '%{}%'".format(ndc_code[0], ndc_code[0])
+        # print(cur.execute(query))
         if cur.execute(query):
             print("ndc conversion")
-            cur.execute(query)
             data = cur.fetchall()
+            print(data)
             ndc_code = [i[0] for i in data]
-        elif cur.execute(query) != 0:
+            print("finished converting from tuple to list")
+        if cur.execute(query) == 0:
             ndc_code = []
 
     print(not atc_in.isspace())
     print(bool(atc_in))
     if not atc_in.isspace() and atc_in:
         atc_code = [atc_in]
-        query = "SELECT ATC_CODE FROM atc_label WHERE STR_IN LIKE '%{}%'".format(atc_code[0])
+        query = "SELECT ATC_CODE FROM atc_label WHERE STR_IN LIKE '%{}%' OR ATC_CODE LIKE '%{}%'".format(atc_code[0], atc_code[0])
         print(cur.execute(query))
         if cur.execute(query):
             print("atc converison")
-            cur.execute(query)
             data = cur.fetchall()
             atc_code = [i[0] for i in data]
-        elif cur.execute(query) != 0:
+        if cur.execute(query) == 0:
             atc_code = []
 
     print(not umls_in.isspace())
     print(bool(umls_in))
     if not umls_in.isspace() and umls_in:
         umls_code = [umls_in]
-        query = "SELECT UMLSCUI_MEDDRA FROM umls_label WHERE SIDE_EFFECT_NAME LIKE '%{}%'".format(umls_code[0])
+        query = "SELECT DISTINCT UMLSCUI_MEDDRA FROM umls_label WHERE SIDE_EFFECT_NAME LIKE '%{}%' OR UMLSCUI_MEDDRA LIKE '%{}%'".format(umls_code[0], umls_code[0])
         print(cur.execute(query))
         if cur.execute(query):
             print("umls conversion")
-            cur.execute(query)
+            # cur.execute(query)
             data = cur.fetchall()
-            umls_code = [i[0] for i in data]
-        elif cur.execute(query) != 0:
+            umls_code = [i[0] for i in data] # Convert from tuple to list
+        if cur.execute(query) == 0:
             umls_code = []
 
-    print(ndc_code)
-    print(atc_code)
-    print(umls_code)
-    print("return ndc, atc, umls codes")
+    print("Return values after conversion: NDC {}, ATC {}, UMLS {}".format(ndc_code, atc_code, umls_code))
     return ndc_code, atc_code, umls_code
 
 
@@ -83,14 +78,8 @@ def get_results(ndc_in, atc_in, umls_in):
     # Code numbers
     ndc_code, atc_code, umls_code = text_to_code(ndc_in, atc_in, umls_in)
     print()
-    print("ndc_code: ")
-    print(ndc_code)
-    print()
-    print("atc_code: ")
-    print(atc_code)
-    print()
-    print("umls_code: ")
-    print(umls_code)
+    print("get_results inputs:")
+    print("NDC {}, ATC {}, UMLS {}".format(ndc_code, atc_code, umls_code))
     print()
 
     # if ndc_in:
@@ -245,15 +234,14 @@ def search_page():
         atc_in = request.form['atc']
         umls_in = request.form['umls']
 
-        print("inputted values")
-
+        print("inputted values: " + ndc_in + ", " + atc_in + ", " + umls_in)
+        start_time = time.time()
         ndc_res, atc_res, umls_res = get_results(ndc_in, atc_in, umls_in)
 
-
+        print("Program time: {}".format(time.time()- start_time))
         print(url_for('search', search_page=(ndc_in, atc_in, umls_in)))
         return render_template("search.html", ndc_codes=ndc_res, atc_codes=atc_res, umls_codes=umls_res, ndc_in=ndc_in,
                                atc_in=atc_in, umls_in=umls_in)
-        print("endcode")
 
 if __name__ == '__main__':
     webapp.run()
