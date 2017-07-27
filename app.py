@@ -20,77 +20,67 @@ conn = pymysql.connect(host='localhost', port=3306, user='root', password='passw
 cur = conn.cursor()
 
 
+# Converts text input to code. Ignore whitespaces and invalid entries
 def text_to_code(ndc_in, atc_in, umls_in):
-    print("Text to code function: ")
+    print("\nFunction: text_to_code(ndc_in, atc_in, umls_in)")
+    start_time = time.time()
     ndc_code = []
     atc_code = []
     umls_code = []
 
-    print(not ndc_in.isspace())
-    print(bool(ndc_in))
+    print("NDC: {}, {}".format(not ndc_in.isspace(), bool(ndc_in)))
     # IF ndc_in is not a space and ndc_in is not empty
     # isspace() returns true if str is a space
     if not ndc_in.isspace() and ndc_in:
         ndc_code = [ndc_in]
         query = "SELECT NDC_CODE FROM ndc_label WHERE STR_NDC LIKE '%{}%' OR NDC_CODE LIKE '%{}%'".format(ndc_code[0], ndc_code[0])
-        # print(cur.execute(query))
         if cur.execute(query):
-            print("ndc conversion")
+            print("NDC conversion")
             data = cur.fetchall()
-            print(data)
-            ndc_code = [i[0] for i in data]
-            print("finished converting from tuple to list")
+            ndc_code = [i[0] for i in data]  # Convert from tuple to list
         if cur.execute(query) == 0:
             ndc_code = []
 
-    print(not atc_in.isspace())
-    print(bool(atc_in))
+    print("ATC: {}, {}".format(not atc_in.isspace(), bool(atc_in)))
     if not atc_in.isspace() and atc_in:
         atc_code = [atc_in]
         query = "SELECT ATC_CODE FROM atc_label WHERE STR_IN LIKE '%{}%' OR ATC_CODE LIKE '%{}%'".format(atc_code[0], atc_code[0])
-        print(cur.execute(query))
         if cur.execute(query):
-            print("atc converison")
+            print("ATC conversion")
             data = cur.fetchall()
             atc_code = [i[0] for i in data]
         if cur.execute(query) == 0:
             atc_code = []
 
-    print(not umls_in.isspace())
-    print(bool(umls_in))
+    print("UMLS: {}, {}".format(not umls_in.isspace(), bool(umls_in)))
     if not umls_in.isspace() and umls_in:
         umls_code = [umls_in]
         query = "SELECT DISTINCT UMLSCUI_MEDDRA FROM umls_label WHERE SIDE_EFFECT_NAME LIKE '%{}%' OR UMLSCUI_MEDDRA LIKE '%{}%'".format(umls_code[0], umls_code[0])
-        print(cur.execute(query))
         if cur.execute(query):
-            print("umls conversion")
-            # cur.execute(query)
+            print("UMLS conversion")
             data = cur.fetchall()
-            umls_code = [i[0] for i in data] # Convert from tuple to list
+            umls_code = [i[0] for i in data]
         if cur.execute(query) == 0:
             umls_code = []
 
-    print("Return values after conversion: NDC {}, ATC {}, UMLS {}".format(ndc_code, atc_code, umls_code))
+    print("Return values:\nNDC {}\nATC {}\nUMLS {}".format(ndc_code, atc_code, umls_code))
+    print("Function time: {}".format(time.time() - start_time))
     return ndc_code, atc_code, umls_code
 
 
+# Get code outputs from text_to_code and process the inputs.
 def get_results(ndc_in, atc_in, umls_in):
-    # Code numbers
     ndc_code, atc_code, umls_code = text_to_code(ndc_in, atc_in, umls_in)
-    print()
-    print("get_results inputs:")
-    print("NDC {}, ATC {}, UMLS {}".format(ndc_code, atc_code, umls_code))
-    print()
+    start_time = time.time()
 
-
-    print(bool(ndc_code))
-    print(bool(atc_code))
-    print(bool(umls_code))
+    print("\nFunction: get_results(ndc_in, atc_in, umls_in) after calling text_to_code")
+    print("Converted inputs:\nNDC {}\nATC {}\nUMLS {}".format(ndc_code, atc_code, umls_code))
+    print("NDC: {}, ATC: {}, UMLS: {}".format(bool(ndc_code), bool(atc_code), bool(umls_code)))
 
     # Input is NDC only
     if ndc_code and not atc_code and not umls_code:
-        # if there are also inputs for ats or umls, put it on array to show correct results
-        print("ndc only")
+        # if there are also inputs for ats or umls, put it on array to show results for those inputs
+        print("NDC only")
         if atc_in and not atc_in.isspace():
             atc_code = [atc_in]
         else:
@@ -113,7 +103,7 @@ def get_results(ndc_in, atc_in, umls_in):
 
     # Input is ATC only
     elif atc_code and not ndc_code and not umls_code:
-        print("atc only")
+        print("ATC only")
         if ndc_in and not ndc_in.isspace():
             ndc_code = [ndc_in]
         else:
@@ -135,7 +125,7 @@ def get_results(ndc_in, atc_in, umls_in):
 
     # Input is UMLS only
     elif umls_code and not ndc_code and not atc_code:
-        print("umls only")
+        print("UMLS only")
         if atc_in and not atc_in.isspace():
             atc_code = [atc_in]
         else:
@@ -158,7 +148,7 @@ def get_results(ndc_in, atc_in, umls_in):
 
     # Input is NDC and ATC
     elif ndc_code and atc_code and not umls_code:
-        print("ndc and atc")
+        print("NDC and ATC")
         # remove [ ] on the list
         if umls_in and not umls_in.isspace():
             umls_code = [umls_in]
@@ -173,7 +163,7 @@ def get_results(ndc_in, atc_in, umls_in):
 
     # Input is NDC and UMLS
     elif ndc_code and not atc_code and umls_code:
-        print("ndc and umls")
+        print("NDC and UMLS")
         if atc_in and not atc_in.isspace():
             atc_code = [atc_in]
         else:
@@ -186,7 +176,7 @@ def get_results(ndc_in, atc_in, umls_in):
 
     # Input is ATC and UMLS
     elif not ndc_code and atc_code and umls_code:
-        print("atc and umls")
+        print("ATC and UMLS")
         if ndc_in and not ndc_in.isspace():
             ndc_code = [ndc_in]
         else:
@@ -202,8 +192,10 @@ def get_results(ndc_in, atc_in, umls_in):
     atc_code = list(set(atc_code))
     ndc_code = list(set(ndc_code))
     umls_code = list(set(umls_code))
-    print("ndc {} atc {} umls {}".format(ndc_code, atc_code, umls_code))
+    print("\nRemove Duplicates (resulting codes)")
+    print("NDC {}\nATC {}\nUMLS {}".format(ndc_code, atc_code, umls_code))
 
+    # Statements below will convert codes into text. name_res variables are tuples[][]
     # NDC LABEL
     if ndc_code:
         placeholder = ', '.join(['%s'] * len(ndc_code))
@@ -231,21 +223,19 @@ def get_results(ndc_in, atc_in, umls_in):
     else:
         umls_res = []
 
+    print("Function time: {}".format(time.time() - start_time))
     return ndc_res, atc_res, umls_res
 
 
-
-print("first route")
 @webapp.route('/')
 def search():
+    print("first route")
     return render_template('search.html')
 
 
-
-
-print("second route")
 @webapp.route('/', methods=['POST'])
 def search_page():
+    print("second route")
     print("pre post request")
     if request.method == 'POST':
         # Input form requests
@@ -254,11 +244,11 @@ def search_page():
         atc_in = request.form['atc']
         umls_in = request.form['umls']
 
-        print("inputted values: " + ndc_in + ", " + atc_in + ", " + umls_in)
+        print("Input values: " + ndc_in + ", " + atc_in + ", " + umls_in)
         start_time = time.time()
         ndc_res, atc_res, umls_res = get_results(ndc_in, atc_in, umls_in)
 
-        print("Program time: {}".format(time.time()- start_time))
+        print("\nProgram time: {}".format(time.time()- start_time))
         print(url_for('search', search_page=(ndc_in, atc_in, umls_in)))
         return render_template("search.html", ndc_codes=ndc_res, atc_codes=atc_res, umls_codes=umls_res, ndc_in=ndc_in,
                                atc_in=atc_in, umls_in=umls_in)
