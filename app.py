@@ -31,6 +31,7 @@ def text_to_code(ndc_in, atc_in, umls_in):
     print("NDC: {}, {}".format(not ndc_in.isspace(), bool(ndc_in)))
     # IF ndc_in is not a space and ndc_in is not empty
     # isspace() returns true if str is a space
+    time_ndc = time.time()
     if not ndc_in.isspace() and ndc_in:
         ndc_code = [ndc_in]
         query = "SELECT NDC_CODE FROM ndc_label WHERE STR_NDC LIKE '%{}%' OR NDC_CODE LIKE '%{}%'".format(ndc_code[0], ndc_code[0])
@@ -38,9 +39,13 @@ def text_to_code(ndc_in, atc_in, umls_in):
             print("NDC conversion")
             data = cur.fetchall()
             ndc_code = [i[0] for i in data]  # Convert from tuple to list
-        if cur.execute(query) == 0:
+        # if cur.execute(query) == 0: ## Change this?!??!?!
+        else:
             ndc_code = []
+    print("Ndc conversion time: {}".format(time.time() - time_ndc))
 
+
+    time_atc = time.time()
     print("ATC: {}, {}".format(not atc_in.isspace(), bool(atc_in)))
     if not atc_in.isspace() and atc_in:
         atc_code = [atc_in]
@@ -49,9 +54,13 @@ def text_to_code(ndc_in, atc_in, umls_in):
             print("ATC conversion")
             data = cur.fetchall()
             atc_code = [i[0] for i in data]
-        if cur.execute(query) == 0:
+        # if cur.execute(query) == 0:
+        else:
             atc_code = []
+    print("Atc conversion time: {}".format(time.time() - time_atc))
 
+
+    time_umls = time.time()
     print("UMLS: {}, {}".format(not umls_in.isspace(), bool(umls_in)))
     if not umls_in.isspace() and umls_in:
         umls_code = [umls_in]
@@ -60,8 +69,10 @@ def text_to_code(ndc_in, atc_in, umls_in):
             print("UMLS conversion")
             data = cur.fetchall()
             umls_code = [i[0] for i in data]
-        if cur.execute(query) == 0:
+        # if cur.execute(query) == 0:
+        else:
             umls_code = []
+    print("umls conversion time: {}".format(time.time() - time_umls))
 
     print("Return values:\nNDC {}\nATC {}\nUMLS {}".format(ndc_code, atc_code, umls_code))
     print("Function time: {}".format(time.time() - start_time))
@@ -130,7 +141,7 @@ def get_results(ndc_in, atc_in, umls_in):
             atc_code = [atc_in]
         else:
             placeholder = ', '.join(['%s'] * len(umls_code))
-            query = 'SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) LIMIT 1000'.format(placeholder)
+            query = 'SELECT ATC_CODE FROM atc_umls WHERE UMLSCUI_MEDDRA IN ({}) LIMIT 500'.format(placeholder)
             cur.execute(query, tuple(umls_code))
             data = cur.fetchall()
             for row in data:
@@ -140,7 +151,7 @@ def get_results(ndc_in, atc_in, umls_in):
             ndc_code = [ndc_in]
         else:
             placeholder = ', '.join(['%s'] * len(atc_code))
-            query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({}) LIMIT 1000'.format(placeholder)
+            query = 'SELECT NDC_CODE FROM ndc_atc WHERE ATC_CODE IN ({}) LIMIT 500'.format(placeholder)
             cur.execute(query, tuple(atc_code))
             data = cur.fetchall()
             for row in data:
@@ -229,6 +240,7 @@ def get_results(ndc_in, atc_in, umls_in):
 def atc_description(atc_res):
     res_list = [x[0] for x in atc_res]
     atc_desc_res = []
+    time2 = time.time()
     for string in res_list:
         lv1 = string[:1]
         lv2 = string[:3]
@@ -240,6 +252,7 @@ def atc_description(atc_res):
         cur.execute(query)
         atc_tupl = cur.fetchall()
         atc_desc_res.append(atc_tupl)
+    print("\natc_desc: {}".format(time.time() - time2))
 
     return atc_desc_res
 
