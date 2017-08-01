@@ -65,8 +65,13 @@
                         {% if atc_codes %}
                         {% for atc in atc_codes %}
                         <div class="panel panel-default panel-body">
-                            <h4>{{ atc[1] }}</h4>
-                            <p>ATC: {{ atc[0] }}</p>
+                            <h4>{{ atc[4][1] }}</h4>
+                            <p>ATC: {{ atc[4][0] }}</p>
+                            <p>Level 1: {{ atc[0][1] }}</p>
+                            <p>Level 2: {{ atc[1][1] }}</p>
+                            <p>Level 3: {{ atc[2][1] }}</p>
+                            <p>Level 4: {{ atc[3][1] }}</p>
+                            <p>Level 5: {{ atc[4][2] }}</p>
                         </div>
                         {% endfor %}
                         {% else %}

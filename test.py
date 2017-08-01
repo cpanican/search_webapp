@@ -212,10 +212,45 @@ print(len(umls_code))
 print("SELECT ATC_CODE FROM ndc_atc WHERE NDC_CODE = '{}' AND ATC_CODE = '{}'".format(ndc_in, atc_in))
 print(', '.join(repr(i) for i in umls_code))
 
-umls_in = 'test'
-umls_code = [umls_in]
-query = "SELECT UMLSCUI_MEDDRA FROM umls_label WHERE SIDE_EFFECT_NAME LIKE '(?)'", (umls_code,)
-print(cur.execute(query))
-print(umls_code)
-print(type(query))
-print(query)
+
+print(atc_res)
+
+res_list = [x[0] for x in atc_res]
+print(res_list)
+atc_desc = []
+
+for string in res_list:
+    # 1 character Level 1
+    lv1 = string[:1]
+
+    # 1-3 characters Level 2
+    lv2 = string[:3]
+
+    # 1-4 characters Level 3
+    lv3 = string[:4]
+
+    # 1-5 characters Level 4
+    lv4 = string[:5]
+
+    # 1-7 characters Level 5
+    lv5 = string[:7]
+
+    print("{}, {}, {}, {}, {}".format(lv1, lv2, lv3, lv4, lv5))
+
+    query = "SELECT DISTINCT * FROM atc_index WHERE atc_index IN ('{}', '{}', '{}', '{}', '{}')".format(lv1, lv2, lv3, lv4, lv5)
+    cur.execute(query)
+    atc_tupl = cur.fetchall()
+    atc_desc.append(atc_tupl)
+
+print(atc_desc)
+
+for atc_d in atc_desc:
+    print(atc_d[4][1])
+    print(atc_d[4][0])
+    print(atc_d[0][1]) #Stage 1
+    print(atc_d[1][1]) #Stage 2
+    print(atc_d[2][1]) #Stage 3
+    print(atc_d[3][1]) #Stage 4
+    print(atc_d[4][2]) #DDD
+
+    print()

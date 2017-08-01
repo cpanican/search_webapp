@@ -226,6 +226,23 @@ def get_results(ndc_in, atc_in, umls_in):
     print("Function time: {}".format(time.time() - start_time))
     return ndc_res, atc_res, umls_res
 
+def atc_description(atc_res):
+    res_list = [x[0] for x in atc_res]
+    atc_desc_res = []
+    for string in res_list:
+        lv1 = string[:1]
+        lv2 = string[:3]
+        lv3 = string[:4]
+        lv4 = string[:5]
+        lv5 = string[:7]
+        print("{}, {}, {}, {}, {}".format(lv1, lv2, lv3, lv4, lv5))
+        query = "SELECT DISTINCT * FROM atc_index WHERE atc_index IN ('{}', '{}', '{}', '{}', '{}')".format(lv1, lv2, lv3, lv4, lv5)
+        cur.execute(query)
+        atc_tupl = cur.fetchall()
+        atc_desc_res.append(atc_tupl)
+
+    return atc_desc_res
+
 
 @webapp.route('/')
 def search():
@@ -246,7 +263,9 @@ def search_page():
 
         print("Input values: " + ndc_in + ", " + atc_in + ", " + umls_in)
         start_time = time.time()
-        ndc_res, atc_res, umls_res = get_results(ndc_in, atc_in, umls_in)
+        ndc_res, atc_temp_res, umls_res = get_results(ndc_in, atc_in, umls_in)
+
+        atc_res = atc_description(atc_temp_res)
 
         print("\nProgram time: {}".format(time.time()- start_time))
         print(url_for('search', search_page=(ndc_in, atc_in, umls_in)))
