@@ -1,0 +1,49 @@
+### Notes
+
+Search webapp:
+Using Solr for free text search, MySql for database lookup, and Flask web framework.
+
+
+Prerequisites:
+pip install flask
+pip install flask-bootstrap
+pip install pymysql
+pip install numpy
+pip install pandas
+pip install pyarrow
+pip install solrpy3 (note: don't do pip install solr)
+
+
+## How to run:
+1. Navigate through appdata folder and run upload_to_sql.py to import files into MySql database. (Defaults: localhost:3306, pw: password, schema: webapp)
+2. Install Apache Solr http://lucene.apache.org/solr/ (Windows: Add Solr in PATH)
+3. Run solrTest.py to add data in Solr database and change synonyms.txt (optional)
+3. On terminal, python app.py
+
+
+Useful Solr commands:
+solr create -c <core name>
+solr delete -c <core name>
+solr restart -p <port>
+solr stop -p <port>
+
+
+
+## Search times (8/6/2017)	<i7-6700k, GTX 1080ti, 16gb DDR4>
+<Code Inputs>							<Name Inputs>			<Solr Inputs>
+NDC: 54868034000				(2.59s) 	tigan pediatric	(2.83s)		['heart', 'cardio', cardiac'] (4.11s)
+ATC: R02AD01					(1.82s) 	benzocain	(2.06s)
+UMLS: C0015230					(3.44s) 	rash		(2.81s)
+NDC, ATC: 54868034000, R02AD01			(2.57s) 	ndc, atc	(2.79s)
+ATC, UMLS: R02AD01, C0015230 			(1.88s) 	atc, umls	(2.12s)
+NDC, ATC, UMLS: 54868034000, R02AD01, C0015230  (1.64s) 	ndc, atc, umls	(1.76s)
+
+
+## Search times (8/7/2017)	<i5-6200U, GeForce 940M, 8gb DDR3>
+<Code Inputs>							<Name Inputs>			<Solr Inputs>
+NDC: 54868034000				(0.00s) 	tigan pediatric	(0.00s)		['heart', 'cardio', cardiac'] (0.00s)
+ATC: R02AD01					(0.00s) 	benzocain	(0.00s)
+UMLS: C0015230					(0.00s) 	rash		(0.00s)
+NDC, ATC: 54868034000, R02AD01			(0.00s) 	ndc, atc	(0.00s)
+ATC, UMLS: R02AD01, C0015230 			(0.00s) 	atc, umls	(0.00s)
+NDC, ATC, UMLS: 54868034000, R02AD01, C0015230  (0.00s) 	ndc, atc, umls	(0.00s)
